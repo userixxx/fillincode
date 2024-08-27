@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
@@ -29,14 +30,10 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
+        $validated = $request->validated();
         $user = User::create($validated);
-
         return new UserResource($user);
     }
 
@@ -60,14 +57,10 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(StoreUserRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => 'string|max:255',
-        ]);
-
+        $validated = $request->validated();
         $user->update($validated);
-
         return new UserResource($user);
     }
 
