@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\PostResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -12,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        return UserResource::collection(User::all());
     }
 
     /**
@@ -28,11 +31,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
-        return User::create($request->all());
+        $user = User::create($validated);
+
+        return new UserResource($user);
     }
 
     /**
@@ -40,7 +45,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return $user;
+        $user->load('posts', 'comments'); // жадная загрузка
+        return new UserResource($user);
     }
 
     /**
@@ -56,12 +62,13 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'string|max:255',
         ]);
 
-        $user->update($request->all());
-        return $user;
+        $user->update($validated);
+
+        return new UserResource($user);
     }
 
     /**
@@ -71,5 +78,17 @@ class UserController extends Controller
     {
         $user->delete();
         return response()->noContent();
+    }
+
+    public function posts(User $user)
+    {
+        $user->load('posts'); // жадная загрузка постов
+        return PostResource::collection($user->posts);
+    }
+
+    public function comments(User $user)
+    {
+        $user->load('comments'); // жадная загрузка комментов
+        return CommentResource::collection($user->comments);
     }
 }

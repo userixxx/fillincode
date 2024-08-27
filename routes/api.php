@@ -22,3 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('users', Controllers\UserController::class);
 Route::apiResource('posts', Controllers\PostController::class);
 Route::apiResource('comments', Controllers\CommentController::class);
+
+// доп запросы
+Route::get('users/{user}/posts', [Controllers\UserController::class, 'posts']);
+Route::get('users/{user}/comments', [Controllers\UserController::class, 'comments']);
+Route::get('posts/{post}/comments', [Controllers\PostController::class, 'comments']);

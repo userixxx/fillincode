@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\PostResource;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -11,7 +14,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return PostResource::collection(Post::all());
     }
 
     /**
@@ -27,15 +30,23 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'body' => 'required|string',
+        ]);
+
+        $post = Post::create($validated);
+
+        return new PostResource($post);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Post $post)
     {
-        //
+        $post->load('comments'); // жадная загрузка комментариев
+        return new PostResource($post);
     }
 
     /**
@@ -49,16 +60,30 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'exists:users,id',
+            'body' => 'string',
+        ]);
+
+        $post->update($validated);
+
+        return new PostResource($post);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return response()->noContent();
+    }
+
+    public function comments(Post $post)
+    {
+        $post->load('comments'); // жадная загрузка комментов
+        return CommentResource::collection($post->comments);
     }
 }

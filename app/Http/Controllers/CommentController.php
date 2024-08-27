@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentResource;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -11,7 +13,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
+        return CommentResource::collection(Comment::all());
     }
 
     /**
@@ -27,15 +29,23 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'user_id' => 'required|exists:users,id',
+            'body' => 'required|string',
+        ]);
+
+        $comment = Comment::create($validated);
+
+        return new CommentResource($comment);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Comment $comment)
     {
-        //
+        return new CommentResource($comment);
     }
 
     /**
@@ -49,16 +59,25 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Comment $comment)
     {
-        //
+        $validated = $request->validate([
+            'post_id' => 'exists:posts,id',
+            'user_id' => 'exists:users,id',
+            'body' => 'string',
+        ]);
+
+        $comment->update($validated);
+
+        return new CommentResource($comment);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+        return response()->noContent();
     }
 }
