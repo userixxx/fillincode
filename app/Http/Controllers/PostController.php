@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
@@ -28,15 +29,10 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'body' => 'required|string',
-        ]);
-
+        $validated = $request->validated();
         $post = Post::create($validated);
-
         return new PostResource($post);
     }
 
@@ -60,15 +56,10 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(StorePostRequest $request, Post $post)
     {
-        $validated = $request->validate([
-            'user_id' => 'exists:users,id',
-            'body' => 'string',
-        ]);
-
+        $validated = $request->validated();
         $post->update($validated);
-
         return new PostResource($post);
     }
 

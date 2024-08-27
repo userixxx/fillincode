@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
@@ -27,16 +28,10 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCommentRequest $request)
     {
-        $validated = $request->validate([
-            'post_id' => 'required|exists:posts,id',
-            'user_id' => 'required|exists:users,id',
-            'body' => 'required|string',
-        ]);
-
+        $validated = $request->validated();
         $comment = Comment::create($validated);
-
         return new CommentResource($comment);
     }
 
@@ -59,16 +54,10 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Comment $comment)
+    public function update(StoreCommentRequest $request, Comment $comment)
     {
-        $validated = $request->validate([
-            'post_id' => 'exists:posts,id',
-            'user_id' => 'exists:users,id',
-            'body' => 'string',
-        ]);
-
+        $validated = $request->validated();
         $comment->update($validated);
-
         return new CommentResource($comment);
     }
 
