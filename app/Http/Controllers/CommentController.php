@@ -7,10 +7,25 @@ use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(name="Comments", description="Operations related to comments")
+ */
 class CommentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/comments",
+     *     summary="List all comments",
+     *     tags={"Comments"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of comments",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Comment")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -18,15 +33,23 @@ class CommentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/comments",
+     *     summary="Create a new comment",
+     *     tags={"Comments"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(ref="#/components/schemas/CommentRequest")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Created comment",
+     *         @OA\JsonContent(ref="#/components/schemas/Comment")
+     *     )
+     * )
      */
     public function store(StoreCommentRequest $request)
     {
@@ -36,7 +59,26 @@ class CommentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/comments/{id}",
+     *     summary="Get a specific comment",
+     *     tags={"Comments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="The requested comment",
+     *         @OA\JsonContent(ref="#/components/schemas/Comment")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Comment not found"
+     *     )
+     * )
      */
     public function show(Comment $comment)
     {
@@ -44,15 +86,33 @@ class CommentController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/comments/{id}",
+     *     summary="Update a specific comment",
+     *     tags={"Comments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(ref="#/components/schemas/CommentRequest")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Updated comment",
+     *         @OA\JsonContent(ref="#/components/schemas/Comment")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Comment not found"
+     *     )
+     * )
      */
     public function update(StoreCommentRequest $request, Comment $comment)
     {
@@ -62,7 +122,25 @@ class CommentController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/comments/{id}",
+     *     summary="Delete a specific comment",
+     *     tags={"Comments"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Comment deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Comment not found"
+     *     )
+     * )
      */
     public function destroy(Comment $comment)
     {
